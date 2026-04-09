@@ -1,5 +1,5 @@
 # Credit Card Approval Prediction
-### CST2216 — Machine Learning 2 | Algonquin College | Capstone Project
+### CST2216 - Machine Learning 2 | Algonquin College | Capstone Project
 
 **Group Members:**
 - Fritz Mwambo
@@ -25,7 +25,7 @@ and deployment as a live interactive web application.
 
 ## Live App
 
-👉 **[Open the Streamlit App](https://your-app-url.streamlit.app)**  
+**[Open the Streamlit App](https://your-app-url.streamlit.app)**  
 *(replace with your deployed URL after connecting to Streamlit Cloud)*
 
 ---
@@ -93,14 +93,14 @@ capstone_credit_approval/
 - One-hot encode `OCCUPATION_TYPE` with `dummy_na=True` (preserves missing as a category)
 - One-hot encode all remaining categoricals
 
-### Models — Regression (predicting SCORE)
+### Models - Regression (predicting SCORE)
 | Model | Key Parameters |
 |-------|----------------|
 | Linear Regression | MinMaxScaled features |
 | Decision Tree Regressor | max_depth=10, min_samples_leaf=10, min_samples_split=20 |
 | Random Forest Regressor | n_estimators=300, max_depth=20, min_samples_leaf=5, max_features='sqrt' |
 
-### Models — Classification (predicting APPROVAL)
+### Models - Classification (predicting APPROVAL)
 | Model | Key Parameters |
 |-------|----------------|
 | Logistic Regression | max_iter=1000, class_weight='balanced', MinMaxScaled |
@@ -154,10 +154,5 @@ The dataset `AC_Capstone_topic_2.csv` must be in the same directory as `app.py`.
 
 ---
 
-## Limitations
-
-- Dataset sizes after deduplication (~27,918 rows) are sufficient but below production scale
+## Limitation
 - SCORE has near-zero correlation with available features → regression R² is very low (~0.03)
-- No automated hyperparameter search (GridSearchCV/RandomizedSearchCV) was performed
-- Streamlit Cloud free tier does not persist model files between sessions — models retrain on each visit
-- Minimal feature engineering; domain-specific features (income-to-family ratio, etc.) were not explored
