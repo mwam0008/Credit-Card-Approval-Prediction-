@@ -28,7 +28,7 @@ st.set_page_config(
 DATASET_PATH = "AC_Capstone_topic_2.csv"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SESSION STATE - load and cache data + models
+# SESSION STATE — load and cache data + models
 # ─────────────────────────────────────────────────────────────────────────────
 
 @st.cache_data(show_spinner="Loading dataset…")
@@ -92,14 +92,14 @@ def get_trained_models():
 # ─────────────────────────────────────────────────────────────────────────────
 
 st.sidebar.image("https://www.algonquincollege.com/wp-content/uploads/2022/05/AC_RGB_horiz_pos.png",
-                 use_container_width=True)
+                 width="stretch")
 st.sidebar.title("💳 Credit Card Approval")
 st.sidebar.markdown("**CST2216 · ML2 Capstone**")
 st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
     "Navigate",
-    ["📊 Data Overview", "📈 Regression", "🎯 Classification", "Predict"],
+    ["📊 Data Overview", "📈 Regression", "🎯 Classification", "🔮 Predict"],
 )
 
 st.sidebar.markdown("---")
@@ -117,7 +117,7 @@ trained = get_trained_models()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PAGE 1 - DATA OVERVIEW
+# PAGE 1 — DATA OVERVIEW
 # ─────────────────────────────────────────────────────────────────────────────
 
 if page == "📊 Data Overview":
@@ -137,10 +137,10 @@ if page == "📊 Data Overview":
     col4.metric("Duplicates Removed", f"{raw.shape[0] - clean.shape[0]:,}")
 
     with st.expander("Preview raw data (first 10 rows)"):
-        st.dataframe(raw.head(10), use_container_width=True)
+        st.dataframe(raw.head(10), width="stretch")
 
     with st.expander("Cleaned dataset info"):
-        st.dataframe(clean.describe(include="all").T, use_container_width=True)
+        st.dataframe(clean.describe(include="all").T, width="stretch")
 
     # ── Missing values ───────────────────────────────────────
     st.subheader("Missing Values (Raw Dataset)")
@@ -271,7 +271,7 @@ elif page == "📈 Regression":
             "CV R² (mean)":   cv_d["CV_R2_mean"],
             "CV RMSE (mean)": cv_d["CV_RMSE_mean"],
         })
-    st.dataframe(pd.DataFrame(rows).set_index("Model"), use_container_width=True)
+    st.dataframe(pd.DataFrame(rows).set_index("Model"), width="stretch")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -309,7 +309,7 @@ elif page == "🎯 Classification":
     # Classification report
     with st.expander("Classification Report"):
         report_df = pd.DataFrame(cmet["Report"]).T.round(4)
-        st.dataframe(report_df, use_container_width=True)
+        st.dataframe(report_df, width="stretch")
 
     # ── Confusion matrix ─────────────────────────────────────
     st.subheader("Confusion Matrix")
@@ -340,7 +340,7 @@ elif page == "🎯 Classification":
         "Accuracy": [trained["log_metrics"]["Accuracy"], trained["rf_c_metrics"]["Accuracy"]],
         "ROC-AUC":  [trained["log_metrics"]["ROC_AUC"],  trained["rf_c_metrics"]["ROC_AUC"]],
     }
-    st.dataframe(pd.DataFrame(comp_data).set_index("Model"), use_container_width=True)
+    st.dataframe(pd.DataFrame(comp_data).set_index("Model"), width="stretch")
 
     if (trained["log_metrics"]["y_proba"] is not None and
             trained["rf_c_metrics"]["y_proba"] is not None):
