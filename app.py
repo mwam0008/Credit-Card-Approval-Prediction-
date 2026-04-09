@@ -28,7 +28,7 @@ st.set_page_config(
 DATASET_PATH = "AC_Capstone_topic_2.csv"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SESSION STATE — load and cache data + models
+# SESSION STATE - load and cache data + models
 # ─────────────────────────────────────────────────────────────────────────────
 
 @st.cache_data(show_spinner="Loading dataset…")
@@ -99,7 +99,7 @@ st.sidebar.markdown("---")
 
 page = st.sidebar.radio(
     "Navigate",
-    ["📊 Data Overview", "📈 Regression", "🎯 Classification", "🔮 Predict"],
+    ["📊 Data Overview", "📈 Regression", "🎯 Classification", "Predict"],
 )
 
 st.sidebar.markdown("---")
@@ -117,7 +117,7 @@ trained = get_trained_models()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PAGE 1 — DATA OVERVIEW
+# PAGE 1 - DATA OVERVIEW
 # ─────────────────────────────────────────────────────────────────────────────
 
 if page == "📊 Data Overview":
