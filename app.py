@@ -44,55 +44,53 @@ def get_data():
 def get_trained_models():
     raw, clean, enc, q3 = get_data()
 
-    # ── Regression ──────────────────────────────────────────
     (X_train_r, X_test_r, y_train_r, y_test_r,
      X_train_r_sc, X_test_r_sc,
      scaler_r, feat_cols_r) = m.prepare_regression(enc)
 
-    lr_model  = m.train_linear_regression(X_train_r_sc, y_train_r)
-    dt_model  = m.train_decision_tree_regressor(X_train_r, y_train_r)
+    lr_model   = m.train_linear_regression(X_train_r_sc, y_train_r)
+    dt_model   = m.train_decision_tree_regressor(X_train_r, y_train_r)
     rf_r_model = m.train_random_forest_regressor(X_train_r, y_train_r)
 
-    lr_metrics  = m.evaluate_regression(lr_model,   X_test_r_sc,  y_test_r, "Linear Regression")
-    dt_metrics  = m.evaluate_regression(dt_model,   X_test_r,     y_test_r, "Decision Tree")
+    lr_metrics   = m.evaluate_regression(lr_model,   X_test_r_sc, y_test_r, "Linear Regression")
+    dt_metrics   = m.evaluate_regression(dt_model,   X_test_r,    y_test_r, "Decision Tree")
     rf_r_metrics = m.evaluate_regression(rf_r_model, X_test_r,    y_test_r, "Random Forest")
 
-    lr_cv  = m.cross_validate_regression(lr_model,   X_train_r_sc, y_train_r)
-    dt_cv  = m.cross_validate_regression(dt_model,   X_train_r,    y_train_r)
-    rf_r_cv = m.cross_validate_regression(rf_r_model, X_train_r,   y_train_r)
+    lr_cv   = m.cross_validate_regression(lr_model,   X_train_r_sc, y_train_r)
+    dt_cv   = m.cross_validate_regression(dt_model,   X_train_r,    y_train_r)
+    rf_r_cv = m.cross_validate_regression(rf_r_model, X_train_r,    y_train_r)
 
-    # ── Classification ───────────────────────────────────────
     (X_train_c, X_test_c, y_train_c, y_test_c,
      X_train_c_sc, X_test_c_sc,
      scaler_c, feat_cols_c, q3_val) = m.prepare_classification(enc)
 
     log_model  = m.train_logistic_regression(X_train_c_sc, y_train_c)
-    rf_c_model = m.train_random_forest_classifier(X_train_c,  y_train_c)
+    rf_c_model = m.train_random_forest_classifier(X_train_c, y_train_c)
 
     log_metrics  = m.evaluate_classification(log_model,  X_test_c_sc, y_test_c, "Logistic Regression")
     rf_c_metrics = m.evaluate_classification(rf_c_model, X_test_c,    y_test_c, "Random Forest Classifier")
 
     return {
-        # Regression
-        "lr_model": lr_model,   "dt_model": dt_model,   "rf_r_model": rf_r_model,
+        "lr_model": lr_model,     "dt_model": dt_model,     "rf_r_model": rf_r_model,
         "lr_metrics": lr_metrics, "dt_metrics": dt_metrics, "rf_r_metrics": rf_r_metrics,
-        "lr_cv": lr_cv, "dt_cv": dt_cv, "rf_r_cv": rf_r_cv,
-        "scaler_r": scaler_r,   "feat_cols_r": feat_cols_r,
-        "X_train_r": X_train_r, "y_train_r": y_train_r,
-        # Classification
-        "log_model": log_model, "rf_c_model": rf_c_model,
+        "lr_cv": lr_cv,           "dt_cv": dt_cv,           "rf_r_cv": rf_r_cv,
+        "scaler_r": scaler_r,     "feat_cols_r": feat_cols_r,
+        "X_train_r": X_train_r,   "y_train_r": y_train_r,
+        "log_model": log_model,   "rf_c_model": rf_c_model,
         "log_metrics": log_metrics, "rf_c_metrics": rf_c_metrics,
-        "scaler_c": scaler_c,   "feat_cols_c": feat_cols_c,
+        "scaler_c": scaler_c,     "feat_cols_c": feat_cols_c,
         "q3": q3_val,
     }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SIDEBAR NAVIGATION
+# SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 
-st.sidebar.image("https://www.algonquincollege.com/wp-content/uploads/2022/05/AC_RGB_horiz_pos.png",
-                 width="stretch")
+st.sidebar.image(
+    "https://www.algonquincollege.com/wp-content/uploads/2022/05/AC_RGB_horiz_pos.png",
+    use_column_width=True,
+)
 st.sidebar.title("💳 Credit Card Approval")
 st.sidebar.markdown("**CST2216 · ML2 Capstone**")
 st.sidebar.markdown("---")
@@ -111,7 +109,6 @@ st.sidebar.markdown(
     "- Youssra Ibrahim"
 )
 
-# Load data and models
 raw, clean, enc, q3 = get_data()
 trained = get_trained_models()
 
@@ -128,25 +125,22 @@ if page == "📊 Data Overview":
         "before and after cleaning."
     )
 
-    # ── Dataset stats ────────────────────────────────────────
     st.subheader("Dataset Summary")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Raw Rows",     f"{raw.shape[0]:,}")
-    col2.metric("Cleaned Rows", f"{clean.shape[0]:,}")
-    col3.metric("Features",     f"{raw.shape[1] - 1}")
+    col1.metric("Raw Rows",           f"{raw.shape[0]:,}")
+    col2.metric("Cleaned Rows",       f"{clean.shape[0]:,}")
+    col3.metric("Features",           f"{raw.shape[1] - 1}")
     col4.metric("Duplicates Removed", f"{raw.shape[0] - clean.shape[0]:,}")
 
     with st.expander("Preview raw data (first 10 rows)"):
-        st.dataframe(raw.head(10), width="stretch")
+        st.dataframe(raw.head(10))
 
     with st.expander("Cleaned dataset info"):
-        st.dataframe(clean.describe(include="all").T, width="stretch")
+        st.dataframe(clean.describe(include="all").T)
 
-    # ── Missing values ───────────────────────────────────────
     st.subheader("Missing Values (Raw Dataset)")
     st.pyplot(u.plot_missing_values(raw))
 
-    # ── SCORE distribution ───────────────────────────────────
     st.subheader("SCORE Distribution")
     st.pyplot(u.plot_score_distribution(clean))
     st.info(
@@ -155,7 +149,6 @@ if page == "📊 Data Overview":
         f"median ≈ **{clean['SCORE'].median():.0f}**."
     )
 
-    # ── Approval distribution ────────────────────────────────
     st.subheader("Approval Distribution")
     st.pyplot(u.plot_approval_distribution(clean, q3))
     st.info(
@@ -163,11 +156,9 @@ if page == "📊 Data Overview":
         f"Top 25% of applicants are classified as **Approved**."
     )
 
-    # ── Age group vs score ───────────────────────────────────
     st.subheader("Credit Score by Age Group")
     st.pyplot(u.plot_age_group_vs_score(clean))
 
-    # ── Occupation distribution ──────────────────────────────
     st.subheader("Occupation Type Distribution")
     st.pyplot(u.plot_occupation_distribution(clean))
     st.warning(
@@ -176,7 +167,6 @@ if page == "📊 Data Overview":
         "to preserve all records."
     )
 
-    # ── Correlation heatmap ──────────────────────────────────
     st.subheader("Feature Correlation Heatmap (Encoded)")
     st.pyplot(u.plot_correlation_heatmap(enc))
 
@@ -198,29 +188,27 @@ elif page == "📈 Regression":
         ["Linear Regression", "Decision Tree Regressor", "Random Forest Regressor"],
     )
 
-    # Map selection to stored results
     key_map = {
-        "Linear Regression":        ("lr_model",   "lr_metrics",  "lr_cv",   True),
-        "Decision Tree Regressor":  ("dt_model",   "dt_metrics",  "dt_cv",   False),
-        "Random Forest Regressor":  ("rf_r_model", "rf_r_metrics","rf_r_cv", False),
+        "Linear Regression":       ("lr_model",   "lr_metrics",   "lr_cv"),
+        "Decision Tree Regressor": ("dt_model",   "dt_metrics",   "dt_cv"),
+        "Random Forest Regressor": ("rf_r_model", "rf_r_metrics", "rf_r_cv"),
     }
-    mk, mek, cvk, uses_scaled = key_map[model_choice]
+    mk, mek, cvk = key_map[model_choice]
     mdl    = trained[mk]
     met    = trained[mek]
     cv     = trained[cvk]
     feat_r = trained["feat_cols_r"]
 
-    # ── Metrics ──────────────────────────────────────────────
     st.subheader(f"{model_choice} — Performance Metrics")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Test R²",          f"{met['R2']:.4f}")
-    c2.metric("Adjusted R²",      f"{met['Adjusted_R2']:.4f}")
-    c3.metric("Test RMSE",        f"{met['RMSE']:.2f}")
-    c4.metric("Test MAE",         f"{met['MAE']:.2f}")
+    c1.metric("Test R²",        f"{met['R2']:.4f}")
+    c2.metric("Adjusted R²",    f"{met['Adjusted_R2']:.4f}")
+    c3.metric("Test RMSE",      f"{met['RMSE']:.2f}")
+    c4.metric("Test MAE",       f"{met['MAE']:.2f}")
 
     c5, c6 = st.columns(2)
-    c5.metric("CV R² (mean)",     f"{cv['CV_R2_mean']:.4f}")
-    c6.metric("CV RMSE (mean)",   f"{cv['CV_RMSE_mean']:.2f}")
+    c5.metric("CV R² (mean)",   f"{cv['CV_R2_mean']:.4f}")
+    c6.metric("CV RMSE (mean)", f"{cv['CV_RMSE_mean']:.2f}")
 
     if met["R2"] < 0.05:
         st.warning(
@@ -229,7 +217,6 @@ elif page == "📈 Regression":
             "notebook's findings that feature-SCORE correlations are near zero throughout."
         )
 
-    # ── Diagnostic plots ─────────────────────────────────────
     st.subheader("Diagnostic Plots")
     col_a, col_b, col_c = st.columns(3)
     with col_a:
@@ -242,12 +229,10 @@ elif page == "📈 Regression":
         st.pyplot(u.plot_residuals_vs_predicted(
             met["y_test"], met["y_pred"], model_choice))
 
-    # ── Feature importance ───────────────────────────────────
     if hasattr(mdl, "feature_importances_") or hasattr(mdl, "coef_"):
         st.subheader("Feature Importance")
         st.pyplot(u.plot_regression_feature_importance(mdl, feat_r, model_choice))
 
-    # ── Model comparison ─────────────────────────────────────
     st.subheader("All Models — Comparison")
     metrics_summary = {
         "Linear Regression":       trained["lr_metrics"],
@@ -256,7 +241,6 @@ elif page == "📈 Regression":
     }
     st.pyplot(u.plot_regression_comparison(metrics_summary))
 
-    # Summary table
     rows = []
     for name, met_d in metrics_summary.items():
         cv_d = trained[{"Linear Regression": "lr_cv",
@@ -271,7 +255,7 @@ elif page == "📈 Regression":
             "CV R² (mean)":   cv_d["CV_R2_mean"],
             "CV RMSE (mean)": cv_d["CV_RMSE_mean"],
         })
-    st.dataframe(pd.DataFrame(rows).set_index("Model"), width="stretch")
+    st.dataframe(pd.DataFrame(rows).set_index("Model"))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -291,56 +275,46 @@ elif page == "🎯 Classification":
     )
 
     key_map_c = {
-        "Logistic Regression":     ("log_model",  "log_metrics"),
-        "Random Forest Classifier":("rf_c_model", "rf_c_metrics"),
+        "Logistic Regression":      ("log_model",  "log_metrics"),
+        "Random Forest Classifier": ("rf_c_model", "rf_c_metrics"),
     }
     cmk, cmek = key_map_c[model_choice_c]
-    cmet = trained[cmek]
-    cmdl = trained[cmk]
+    cmet  = trained[cmek]
+    cmdl  = trained[cmk]
     feat_c = trained["feat_cols_c"]
 
-    # ── Metrics ──────────────────────────────────────────────
     st.subheader(f"{model_choice_c} — Performance Metrics")
     cc1, cc2 = st.columns(2)
     cc1.metric("Accuracy", f"{cmet['Accuracy']:.4f}")
     if cmet["ROC_AUC"]:
         cc2.metric("ROC-AUC", f"{cmet['ROC_AUC']:.4f}")
 
-    # Classification report
     with st.expander("Classification Report"):
-        report_df = pd.DataFrame(cmet["Report"]).T.round(4)
-        st.dataframe(report_df, width="stretch")
+        st.dataframe(pd.DataFrame(cmet["Report"]).T.round(4))
 
-    # ── Confusion matrix ─────────────────────────────────────
     st.subheader("Confusion Matrix")
     col_cm, col_roc = st.columns(2)
     with col_cm:
         st.pyplot(u.plot_confusion_matrix(cmet["Confusion_Matrix"], model_choice_c))
-
-    # ── ROC curve ────────────────────────────────────────────
     with col_roc:
         if cmet["y_proba"] is not None:
             st.pyplot(u.plot_roc_curve(
                 cmet["y_test"], cmet["y_proba"], model_choice_c, cmet["ROC_AUC"]))
 
-    # ── Feature importance (RF only) ─────────────────────────
     if hasattr(cmdl, "feature_importances_"):
         st.subheader("Feature Importance")
-        st.pyplot(u.plot_classification_feature_importance(
-            cmdl, feat_c, model_choice_c))
+        st.pyplot(u.plot_classification_feature_importance(cmdl, feat_c, model_choice_c))
 
-    # ── Correlation with approval ─────────────────────────────
     st.subheader("Feature Correlation with APPROVAL Target")
     st.pyplot(u.plot_correlation_with_approval(enc, trained["q3"]))
 
-    # ── Model comparison ─────────────────────────────────────
     st.subheader("Logistic Regression vs Random Forest — Comparison")
     comp_data = {
         "Model":    ["Logistic Regression", "Random Forest Classifier"],
         "Accuracy": [trained["log_metrics"]["Accuracy"], trained["rf_c_metrics"]["Accuracy"]],
         "ROC-AUC":  [trained["log_metrics"]["ROC_AUC"],  trained["rf_c_metrics"]["ROC_AUC"]],
     }
-    st.dataframe(pd.DataFrame(comp_data).set_index("Model"), width="stretch")
+    st.dataframe(pd.DataFrame(comp_data).set_index("Model"))
 
     if (trained["log_metrics"]["y_proba"] is not None and
             trained["rf_c_metrics"]["y_proba"] is not None):
@@ -364,7 +338,6 @@ elif page == "🔮 Predict":
         "**Credit Score** or **Approval Status**."
     )
 
-    # ── Prediction mode ──────────────────────────────────────
     pred_mode = st.radio(
         "Prediction type",
         ["💰 Predict Credit Score", "✅ Predict Approval Status"],
@@ -374,21 +347,20 @@ elif page == "🔮 Predict":
     st.markdown("---")
     st.subheader("Applicant Information")
 
-    # ── Form ─────────────────────────────────────────────────
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        gender = st.radio("Gender", ["Male", "Female"], horizontal=True)
-        own_car = st.radio("Owns a Car?", ["Yes", "No"], horizontal=True)
-        own_realty = st.radio("Owns Real Estate?", ["Yes", "No"], horizontal=True)
+        gender       = st.radio("Gender", ["Male", "Female"], horizontal=True)
+        own_car      = st.radio("Owns a Car?", ["Yes", "No"], horizontal=True)
+        own_realty   = st.radio("Owns Real Estate?", ["Yes", "No"], horizontal=True)
         cnt_children = st.slider("Number of Children", 0, 10, 0)
 
     with col2:
         income = st.number_input(
             "Annual Income (CAD)", min_value=27000, max_value=1575000,
-            value=150000, step=5000, format="%d"
+            value=150000, step=5000, format="%d",
         )
-        cnt_fam = st.slider("Family Members", 1, 10, 2)
+        cnt_fam     = st.slider("Family Members", 1, 10, 2)
         income_type = st.selectbox(
             "Income Type",
             ["Working", "Commercial associate", "State servant", "Pensioner", "Student"],
@@ -409,7 +381,7 @@ elif page == "🔮 Predict":
             ["House / apartment", "Rented apartment", "With parents",
              "Municipal apartment", "Co-op apartment", "Office apartment"],
         )
-        birthday = st.date_input("Date of Birth", value=pd.Timestamp("1985-01-01"))
+        birthday   = st.date_input("Date of Birth", value=pd.Timestamp("1985-01-01"))
         occupation = st.selectbox(
             "Occupation Type",
             ["Unknown / Not Provided", "Accountants", "Cleaning staff", "Cooking staff",
@@ -419,31 +391,29 @@ elif page == "🔮 Predict":
              "Security staff", "Waiters/barmen staff"],
         )
 
-    # ── Build input dict ─────────────────────────────────────
     input_dict = {
-        "CODE_GENDER":       "M" if gender == "Male" else "F",
-        "FLAG_OWN_CAR":      "Y" if own_car == "Yes" else "N",
-        "FLAG_OWN_REALTY":   "Y" if own_realty == "Yes" else "N",
-        "CNT_CHILDREN":      cnt_children,
-        "AMT_INCOME_TOTAL":  income,
-        "CNT_FAM_MEMBERS":   cnt_fam,
-        "NAME_INCOME_TYPE":  income_type,
+        "CODE_GENDER":         "M" if gender == "Male" else "F",
+        "FLAG_OWN_CAR":        "Y" if own_car == "Yes" else "N",
+        "FLAG_OWN_REALTY":     "Y" if own_realty == "Yes" else "N",
+        "CNT_CHILDREN":        cnt_children,
+        "AMT_INCOME_TOTAL":    income,
+        "CNT_FAM_MEMBERS":     cnt_fam,
+        "NAME_INCOME_TYPE":    income_type,
         "NAME_EDUCATION_TYPE": education,
         "NAME_FAMILY_STATUS":  family_status,
         "NAME_HOUSING_TYPE":   housing,
-        "OCCUPATION_TYPE":  None if occupation == "Unknown / Not Provided" else occupation,
-        "BIRTHDAY":         str(birthday),
+        "OCCUPATION_TYPE":     None if occupation == "Unknown / Not Provided" else occupation,
+        "BIRTHDAY":            str(birthday),
     }
 
     st.markdown("---")
 
-    # ── Predict button ───────────────────────────────────────
     if st.button("🔮 Run Prediction", type="primary"):
         try:
             if pred_mode == "💰 Predict Credit Score":
                 score = m.predict_score(
                     input_dict, trained["scaler_r"],
-                    trained["rf_r_model"], trained["feat_cols_r"]
+                    trained["rf_r_model"], trained["feat_cols_r"],
                 )
                 st.success(f"### Predicted Credit Score: **{score:,.0f}**")
                 st.caption(
@@ -451,16 +421,19 @@ elif page == "🔮 Predict":
                     f"R² ≈ {trained['rf_r_metrics']['R2']:.4f}"
                 )
                 if score >= trained["q3"]:
-                    st.info(f"💡 This score ({score:,.0f}) is above the Q3 threshold "
-                            f"({trained['q3']:.0f}), suggesting likely **Approval**.")
+                    st.info(
+                        f"💡 This score ({score:,.0f}) is above the Q3 threshold "
+                        f"({trained['q3']:.0f}), suggesting likely **Approval**."
+                    )
                 else:
-                    st.info(f"💡 This score ({score:,.0f}) is below the Q3 threshold "
-                            f"({trained['q3']:.0f}), suggesting likely **Not Approved**.")
-
+                    st.info(
+                        f"💡 This score ({score:,.0f}) is below the Q3 threshold "
+                        f"({trained['q3']:.0f}), suggesting likely **Not Approved**."
+                    )
             else:
                 result = m.predict_approval(
                     input_dict, trained["scaler_c"],
-                    trained["rf_c_model"], trained["feat_cols_c"], trained["q3"]
+                    trained["rf_c_model"], trained["feat_cols_c"], trained["q3"],
                 )
                 label = result["label"]
                 prob  = result["probability"]
@@ -468,7 +441,6 @@ elif page == "🔮 Predict":
                     st.success(f"### ✅ {label}  —  Confidence: {prob:.1%}")
                 else:
                     st.error(f"### ❌ {label}  —  Confidence: {1 - prob:.1%}")
-
                 st.caption(
                     f"Random Forest Classifier · "
                     f"ROC-AUC = {trained['rf_c_metrics']['ROC_AUC']:.4f} · "
